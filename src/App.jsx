@@ -6,18 +6,19 @@ function App() {
     const [dob, setDob] = useState('');
     const [error, setError] = useState(null);
 
-    const handleFetchData = async () => {
+        const handleFetchData = async () => {
         try {
             const response = await axios.get('https://server-backend-nhs9.onrender.com/fetch-data', {
                 params: { nid, dob },
             });
-
+    
             // Open a new window and write the response data to it
             const newWindow = window.open();
             newWindow.document.write(response.data);
             newWindow.document.close();
         } catch (err) {
-            setError('Error fetching data');
+            console.error('Error fetching data:', err);
+            setError('Error fetching data: ' + (err.response?.data?.message || err.message));
         }
     };
 
