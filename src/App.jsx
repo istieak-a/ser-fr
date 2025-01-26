@@ -1,35 +1,60 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import axios from 'axios';
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [nid, setNid] = useState('');
+    const [dob, setDob] = useState('');
+    const [error, setError] = useState(null);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const handleFetchData = async () => {
+        try {
+            const response = await axios.get('https://server-backend-nhs9.onrender.com/fetch-data', {
+                params: { nid, dob },
+            });
+
+            // Open a new window and write the response data to it
+            const newWindow = window.open();
+            newWindow.document.write(response.data);
+            newWindow.document.close();
+        } catch (err) {
+            setError('Error fetching data');
+        }
+    };
+
+    return (
+        <div className="App">
+            <h1>Fetch Data</h1>
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    handleFetchData();
+                }}
+            >
+                <label>
+                    NID:
+                    <input
+                        type="text"
+                        value={nid}
+                        onChange={(e) => setNid(e.target.value)}
+                        required
+                    />
+                </label>
+                <br />
+                <label>
+                    Date of Birth (YYYY-MM-DD):
+                    <input
+                        type="text"
+                        value={dob}
+                        onChange={(e) => setDob(e.target.value)}
+                        required
+                    />
+                </label>
+                <br />
+                <button type="submit">Get Data</button>
+            </form>
+            {error && <p>{error}</p>}
+        </div>
+    );
 }
 
-export default App
+export default App;
